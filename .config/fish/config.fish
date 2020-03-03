@@ -19,17 +19,56 @@ test -d /usr/local/racket/bin                ; and set PATH /usr/local/racket/bi
 test -d /usr/local/heroku/bin                ; and set PATH /usr/local/heroku/bin $PATH
 test -d /usr/local/sbin                      ; and set PATH /usr/local/sbin $PATH
 test -d /usr/local/bin                       ; and set PATH /usr/local/bin $PATH
-test -d ~/.cabal/bin                         ; and set PATH ~/.cabal/bin $PATH
-test -d ~/Library/Android/sdk/platform-tools ; and set PATH ~/Library/Android/sdk/platform-tools $PATH
 test -d ~/Library/Python/2.7/bin             ; and set PATH ~/Library/Python/2.7/bin $PATH
-test -d /Applications/Araxis\ Merge.app/Contents/Utilities ; and set PATH /Applications/Araxis\ Merge.app/Contents/Utilities $PATH
+test -d /usr/local/var/rbenv             ; and set PATH /usr/local/var/rbenv $PATH
 
 # Navigation
 function ..    ; cd .. ; end
 function ...   ; cd ../.. ; end
 function ....  ; cd ../../.. ; end
 function ..... ; cd ../../../.. ; end
+function l     ; tree --dirsfirst -aFCNL 1 $argv ; end
 function ll    ; tree --dirsfirst -ChFupDaLg 1 $argv ; end
+
+# Vim
+function vp ; nvim -p $argv ; end
+function v  ; nvim $argv ; end
+
+# NPM
+function ni   ; npm install $argv ; end
+function nis  ; npm install --save $argv ; end
+function nus  ; npm uninstall --save $argv ; end
+function nisd ; npm install --save-dev $argv ; end
+function nusd ; npm uninstall --save-dev $argv ; end
+function nr   ; npm run $argv ; end
+
+# Git
+function g    ; git $argv ; end
+function gl   ; git pull ; end
+function gp   ; git push $argv ; end
+function gm   ; git merge $argv ; end
+function gst  ; git status ; end
+function gd   ; git diff ; end
+function gaa  ; git add . ; end
+function gcm  ; git commit -m $argv ; end
+function gsta ; git stash ; end
+function gsp  ; git stash pop ; end
+function glg  ; git log ; end
+function gco  ; git checkout $argv ; end
+function gb   ; git branch $argv ; end
+function grv  ; git remote -v ; end
+function grb  ; git rebase $argv ; end
+function grbc ; git rebase --continue ; end
+function grbs ; git rebase --skip ; end
+function grba ; git rebase --abort ; end
+
+# Postgres
+function pgup   ; pg_ctl -D /usr/local/var/postgres start ; end
+function pgdown ; pg_ctl -D /usr/local/var/postgres stop -s -m fast ; end
+
+# Cocoapods
+function pi  ; pod install $argv ; end
+function pir ; pod install --repo-update ; end
 
 # Utilities
 function a        ; command rg --ignore=.git --ignore=log --ignore=tags --ignore=tmp --ignore=vendor --ignore=spec/vcr $argv ; end
@@ -122,7 +161,7 @@ if not functions -q fisher
   fish -c fisher
 end
 
-# rbenv
+# Load rbenv automatically
 if hash rbenv 2>/dev/null
   status --is-interactive; and source (rbenv init -|psub)
 end
@@ -152,8 +191,3 @@ end
 
 # iterm2
 test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
-
-# fnm
-if hash fnm 2>/dev/null
-  fnm env --multi --use-on-cd | source
-end
