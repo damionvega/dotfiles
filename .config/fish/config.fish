@@ -14,13 +14,15 @@ set -x RBXOPT -X19
 set -x TDD 0
 
 # Paths
-test -d /usr/local/share/npm/bin             ; and set PATH /usr/local/share/npm/bin $PATH
-test -d /usr/local/racket/bin                ; and set PATH /usr/local/racket/bin $PATH
-test -d /usr/local/heroku/bin                ; and set PATH /usr/local/heroku/bin $PATH
-test -d /usr/local/sbin                      ; and set PATH /usr/local/sbin $PATH
-test -d /usr/local/bin                       ; and set PATH /usr/local/bin $PATH
-test -d ~/Library/Python/2.7/bin             ; and set PATH ~/Library/Python/2.7/bin $PATH
-test -d /usr/local/var/rbenv             ; and set PATH /usr/local/var/rbenv $PATH
+test -d /usr/local/share/npm/bin ; and set PATH /usr/local/share/npm/bin $PATH
+test -d /usr/local/racket/bin    ; and set PATH /usr/local/racket/bin $PATH
+test -d /usr/local/heroku/bin    ; and set PATH /usr/local/heroku/bin $PATH
+test -d /usr/local/sbin          ; and set PATH /usr/local/sbin $PATH
+test -d /usr/local/bin           ; and set PATH /usr/local/bin $PATH
+test -d ~/Library/Python/2.7/bin ; and set PATH ~/Library/Python/2.7/bin $PATH
+test -d /usr/local/var/rbenv     ; and set PATH /usr/local/var/rbenv $PATH
+test -d $HOME/.rbenv/shims         ; and set PATH $HOME/.rbenv/shims $PATH
+test -d $HOME/.rbenv/bin         ; and set PATH $HOME/.rbenv/bin $PATH
 
 # Navigation
 function ..    ; cd .. ; end
@@ -41,6 +43,11 @@ function nus  ; npm uninstall --save $argv ; end
 function nisd ; npm install --save-dev $argv ; end
 function nusd ; npm uninstall --save-dev $argv ; end
 function nr   ; npm run $argv ; end
+function nt   ; npm test ; end
+function ntw  ; npm run test:watch ; end
+function ntc  ; npm run cron:test ; end
+function ntcw ; npm run cron:test:watch ; end
+function nd   ; npm run dev ; end
 
 # Git
 function g    ; git $argv ; end
@@ -48,12 +55,13 @@ function gl   ; git pull ; end
 function gp   ; git push $argv ; end
 function gm   ; git merge $argv ; end
 function gst  ; git status ; end
-function gd   ; git diff ; end
+function gd   ; git diff $argv ; end
 function gaa  ; git add . ; end
 function gcm  ; git commit -m $argv ; end
 function gsta ; git stash ; end
 function gsp  ; git stash pop ; end
 function glg  ; git log ; end
+function glgg ; git log --graph --decorate --oneline (git rev-list -g --all) ; end
 function gco  ; git checkout $argv ; end
 function gb   ; git branch $argv ; end
 function grv  ; git remote -v ; end
@@ -61,6 +69,7 @@ function grb  ; git rebase $argv ; end
 function grbc ; git rebase --continue ; end
 function grbs ; git rebase --skip ; end
 function grba ; git rebase --abort ; end
+function grhh ; git reset HEAD --hard ; end
 
 # Postgres
 function pgup   ; pg_ctl -D /usr/local/var/postgres start ; end
