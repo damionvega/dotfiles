@@ -45,7 +45,7 @@ function fish_right_prompt
 end
 
 function __git_ps1
-  set -l g (git rev-parse --git-dir ^/dev/null)
+  set -l g (git rev-parse --git-dir 2>/dev/null)
   if [ -n "$g" ]
     set -l r ""
     set -l b ""
@@ -59,7 +59,7 @@ function __git_ps1
         set r "|AM/REBASE"
       end
 
-      set b (git symbolic-ref HEAD ^/dev/null)
+      set b (git symbolic-ref HEAD 2>/dev/null)
     elseif [ -f "$g/.dotest-merge/interactive" ]
       set r "|REBASE-i"
       set b (cat "$g/.dotest-merge/head-name")
@@ -68,15 +68,15 @@ function __git_ps1
       set b (cat "$g/.dotest-merge/head-name")
     elseif [ -f "$g/MERGE_HEAD" ]
       set r "|MERGING"
-      set b (git symbolic-ref HEAD ^/dev/null)
+      set b (git symbolic-ref HEAD 2>/dev/null)
     else
       if [ -f "$g/BISECT_LOG" ]
         set r "|BISECTING"
       end
 
-      set b (git symbolic-ref HEAD ^/dev/null)
+      set b (git symbolic-ref HEAD 2>/dev/null)
       if [ -z $b ]
-        set b (git describe --exact-match HEAD ^/dev/null)
+        set b (git describe --exact-match HEAD 2>/dev/null)
         if [ -z $b ]
           set b (cut -c1-7 "$g/HEAD")
           set b "$b..."
@@ -90,6 +90,6 @@ function __git_ps1
 
     set b (echo $b | sed -e 's|^refs/heads/||')
 
-    printf $argv "$b$r" ^/dev/null
+    printf $argv "$b$r" 2>/dev/null
   end
 end
