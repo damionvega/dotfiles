@@ -3,7 +3,8 @@ diff-so-fancy
 git
 fish
 neovim
-postgresql
+postgresql@12
 python
 rbenv
+ruby-build
 tree

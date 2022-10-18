@@ -1,16 +1,5 @@
-# Expand save panel by default
-defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
-defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode2 -bool true
-
-# Expand print panel by default
-defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
-defaults write NSGlobalDomain PMPrintingExpandedStateForPrint2 -bool true
-
-# Save to disk (not to iCloud) by default
-# defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
-
-# Automatically quit printer app once the print jobs complete
-defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
+# To undo any changes made below, run:
+# defaults delete <domain> <key>
 
 # Disable the “Are you sure you want to open this application?” dialog
 defaults write com.apple.LaunchServices LSQuarantine -bool false
@@ -22,16 +11,6 @@ defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int
 # (e.g. enable Tab in modal dialogs)
 defaults write NSGlobalDomain AppleKeyboardUIMode -int 3
 
-# Use scroll gesture with the Ctrl (^) modifier key to zoom
-defaults write com.apple.universalaccess closeViewScrollWheelToggle -bool true
-defaults write com.apple.universalaccess HIDScrollZoomModifierMask -int 262144
-
-# Follow the keyboard focus while zoomed in
-defaults write com.apple.universalaccess closeViewZoomFollowsFocus -bool true
-
-# Disable press-and-hold for keys in favor of key repeat
-defaults write NSGlobalDomain ApplePressAndHoldEnabled -bool false
-
 # Set a blazingly fast keyboard repeat rate
 defaults write NSGlobalDomain KeyRepeat -int 0
 
@@ -39,7 +18,7 @@ defaults write NSGlobalDomain KeyRepeat -int 0
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
 
 # Save screenshots to the desktop
-defaults write com.apple.screencapture location -string "${HOME}/Desktop"
+defaults write com.apple.screencapture location -string "${HOME}/Screenshots"
 
 # Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
 defaults write com.apple.screencapture type -string "png"
@@ -58,9 +37,12 @@ defaults write com.apple.frameworks.diskimages skip-verify -bool true
 defaults write com.apple.frameworks.diskimages skip-verify-locked -bool true
 defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
 
-# Use list view in all Finder windows by default
+# "Given that only communists use anything other than the list view, we’re
+#  going to set the default to that with a simple defaults command"
+#     - https://krypted.com/mac-os-x/change-default-finder-views-using-defaults
+# Use column view in all Finder windows by default
 # Four-letter codes for the other view modes: `icnv`, `clmv`, `Flwv`
-defaults write com.apple.finder FXPreferredViewStyle -string "Nlsv"
+defaults write com.apple.finder FXPreferredViewStyle -string "nlsv"
 
 # Disable the warning before emptying the Trash
 defaults write com.apple.finder WarnOnEmptyTrash -bool false
@@ -79,19 +61,12 @@ defaults write com.apple.dock autohide-time-modifier -float 0
 # Automatically hide and show the Dock
 defaults write com.apple.dock autohide -bool true
 
-
 # Press Tab to highlight each item on a web page
 defaults write com.apple.Safari WebKitTabToLinksPreferenceKey -bool true
 defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebKit2TabsToLinks -bool true
 
-
-# Show the full URL in the address bar (note: this still hides the scheme)
-# defaults write com.apple.Safari ShowFullURLInSmartSearchField -bool true
-
-
 # Enable Safari’s debug menu
 defaults write com.apple.Safari IncludeInternalDebugMenu -bool true
-
 
 # Enable the Develop menu and the Web Inspector in Safari
 defaults write com.apple.Safari IncludeDevelopMenu -bool true
@@ -101,15 +76,11 @@ defaults write com.apple.Safari com.apple.Safari.ContentPageGroupIdentifier.WebK
 # Add a context menu item for showing the Web Inspector in web views
 defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
 
-
 # Visualize CPU usage in the Activity Monitor Dock icon
 defaults write com.apple.ActivityMonitor IconType -int 5
 
 # Show all processes in Activity Monitor
 defaults write com.apple.ActivityMonitor ShowCategory -int 0
-
-# Disable automatic emoji substitution (i.e. use plain text smileys)
-defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "automaticEmojiSubstitutionEnablediMessage" -bool false
 
 # Disable continuous spell checking
 defaults write com.apple.messageshelper.MessageController SOInputLineSettings -dict-add "continuousSpellCheckingEnabled" -bool false

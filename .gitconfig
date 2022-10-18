@@ -1,6 +1,6 @@
 [user]
   name  = Damion Vega
-  email = damionvega333@gmail.com
+  email = hi@djv.io
 
 [alias]
   br   = branch
@@ -53,7 +53,7 @@
   version = 2
 
 [credential]
-  helper = osxkeychain
+  helper = manager
 
 [url "git@github.com:"]
   insteadOf     = "gh:"
