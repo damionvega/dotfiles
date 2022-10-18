@@ -71,12 +71,13 @@ xcode-select --install
 log 'Changing MacOS user preferences'
 source "$DOTFILES_TARGET/prefs.sh"
 
+log 'Setting up Fish'
+$(which fish) "$DOTFILES_TARGET/new_machine/setup.fish"
+$(which fish) eval (/opt/homebrew/bin/brew shellenv)
+
 log 'Creating postgres user'
 createuser -s postgres
 brew services restart postgresql
-
-log 'Setting up Fish'
-$(which fish) "$DOTFILES_TARGET/new_machine/setup.fish"
 
 log 'Making Fish default shell'
 chsh -s $(which fish)
