@@ -76,7 +76,7 @@ createuser -s postgres
 brew services restart postgresql
 
 log 'Setting up Fish'
-$(which fish) "${HOME}/$DOTFILES_TARGET/new_machine/setup.fish"
+$(which fish) "$DOTFILES_TARGET/new_machine/setup.fish"
 
 log 'Making Fish default shell'
 chsh -s $(which fish)
@@ -104,14 +104,14 @@ fi
 log '✅ Homebrew installations:'
 brew list
 
-log "✅ iTerm2 custom preferences location: ${ITERM_PREFS_DIR}"
+log "✅ iTerm2 custom preferences location: $ITERM_PREFS_DIR"
 echo 'Restart iTerm2 and confirm preferences are loaded upon start:'
 echo 'General → Preferences → [x] Load preferences from a custom folder or URL'
 
 log "✅ Fish version: $(fish -v)"
 echo "Fish should be the default shell when you start a new terminal session."
 echo "If not, try again with `chsh -s $(which fish)`"
-echo "See ${HOME}/$DOTFILES_TARGET/new_machine/setup.fish for more details on how to install Fish"
+echo "See $DOTFILES_TARGET/new_machine/setup.fish for more details on how to install Fish"
 echo
 echo '# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #'
 echo '       🏁 Finished! Enjoy your new machine! 🏁'
