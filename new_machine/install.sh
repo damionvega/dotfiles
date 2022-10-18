@@ -41,13 +41,13 @@ log "Copying config directories inside $DOTFILES_TARGET to $TARGET"
 rsync -av --exclude={'.git','*.md'} $DOTFILES_TARGET/ $TARGET
 
 log 'Setting global git config'
-git config --global "${HOME}/.config/.gitconfig"
+git config --global "${HOME}/.gitconfig"
 
 log 'Installing brew formulae'
 brew install $(cat $DOTFILES_TARGET/brew-list)
 
 log 'Installing brew casks'
-brew install $(cat $DOTFILES_TARGET/brew-cask-list)
+brew install --cask $(cat $DOTFILES_TARGET/brew-cask-list)
 
 log 'Setting iTerm2 preferences source'
 ITERM_PREFS_DIR="${HOME}/Library/Mobile Documents/com~apple~CloudDocs/_djv/iTerm2"
@@ -88,7 +88,8 @@ echo '# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #'
 
 log "✅ Ruby version: $(ruby -v)"
 echo
-if [ -x $(command -v node) ]; then
+
+if (( $+commands[node] )); then
     echo "✅ Node.js version: $(node -v)"
 else
     echo '❌ Node.js was not installed. Check nvm.fish & Node.js was installed correctly: https://github.com/jorgebucaran/nvm.fish'
