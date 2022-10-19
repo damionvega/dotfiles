@@ -41,10 +41,13 @@ log "Copying config directories inside $DOTFILES_TARGET to $TARGET"
 rsync -av --exclude={'.git','*.md'} $DOTFILES_TARGET/ $TARGET
 
 log 'Installing brew formulae'
-brew install $(cat $DOTFILES_TARGET/brew-list)
+brew install $(cat $DOTFILES_TARGET/brew-formulae)
+
+log 'Updating brew taps'
+brew tap $(cat $DOTFILES_TARGET/brew-taps)
 
 log 'Installing brew casks'
-brew install --cask $(cat $DOTFILES_TARGET/brew-cask-list)
+brew install --cask $(cat $DOTFILES_TARGET/brew-casks)
 
 log 'Setting iTerm2 preferences source'
 ITERM_PREFS_DIR="${HOME}/Library/Mobile Documents/com~apple~CloudDocs/_djv/iTerm2"
