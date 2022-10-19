@@ -87,6 +87,8 @@ log "✅ Ruby version: $(ruby -v)"
 echo
 
 NODE_VERSION=$(ls ~/.local/share/nvm)
+echo "nv: $NODE_VERSION"
+echo "nv: $NODE_VERSION != null"
 if [ "$NODE_VERSION" != null ]; then
     echo "✅ Node.js version: $NODE_VERSION"
 else

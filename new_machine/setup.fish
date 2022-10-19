@@ -42,11 +42,6 @@ fisher install jethrokuan/z
 log 'Installing latest Node.js LTS with jorgebucaran/nvm.fish'
 nvm install lts
 
-log 'Creating postgres user'
-fish_add_path /opt/homebrew/opt/postgresql@12/bin
-createuser -s postgres
-brew services restart postgresql
-
 log 'Updating Fish completions'
 fish_update_completions
 
