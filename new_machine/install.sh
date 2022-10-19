@@ -53,7 +53,7 @@ defaults write com.googlecode.iterm2 "LoadPrefsFromCustomFolder" -bool true
 
 log 'Installing schemes via iTerm2-Color-Schemes'
 git clone https://github.com/mbadolato/iTerm2-Color-Schemes.git
-iTerm2-Color-Schemes/tools/import-scheme.sh ChallengerDeep Github 'GitHub Dark' MaterialDarker MaterialDesignColors synthwave-everything UltraViolent
+iTerm2-Color-Schemes/tools/import-scheme.sh 'Gruvbox Dark' 'Gruvbox Light' MaterialDesignColors synthwave-everything UltraViolent
 rm -rf iTerm2-Color-Schemes
 
 log 'Installing Ruby via rbenv'
@@ -70,10 +70,6 @@ source "$DOTFILES_TARGET/prefs.sh"
 
 log 'Setting up Fish'
 $(which fish) "$DOTFILES_TARGET/new_machine/setup.fish"
-
-log 'Creating postgres user'
-createuser -s postgres
-brew services restart postgresql
 
 log 'Making Fish default shell'
 chsh -s $(which fish)
