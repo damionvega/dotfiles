@@ -1,5 +1,7 @@
 #!/opt/homebrew/bin/fish
 
+log 'setup.fish: Start'
+
 function log
     echo
     echo "💬 $argv..."
@@ -16,7 +18,8 @@ if not string match -e $BREW_PATH $BREW_GREP
     set -U fish_user_paths $BREW_PATH $fish_user_paths
     fish_add_path $BREW_PATH
 else
-    log '$BREW_PATH already exists in PATH'
+    log '$BREW_PATH already exists in $PATH:'
+    echo $PATH
 end
 
 log 'Verifying Fish path exists in /etc/shells'
@@ -27,7 +30,8 @@ if not string match -e $FISH_PATH $FISH_GREP
     # echo $FISH_PATH | sudo tee -a /etc/shells
     sudo sh -c "echo $FISH_PATH >> /etc/shells"
 else
-    log '$FISH_PATH already exists in /etc/shells'
+    log '$FISH_PATH already exists in /etc/shells:'
+    cat /etc/shells
 end
 
 log 'Installing Fisher & plugins'
@@ -45,5 +49,7 @@ nvm use lts
 
 log 'Updating Fish completions'
 fish_update_completions
+
+log 'setup.fish: Done'
 
 exit

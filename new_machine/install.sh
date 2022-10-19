@@ -40,9 +40,6 @@ TARGET="$HOME"
 log "Copying config directories inside $DOTFILES_TARGET to $TARGET"
 rsync -av --exclude={'.git','*.md'} $DOTFILES_TARGET/ $TARGET
 
-log 'Setting global git config'
-git config --global "${HOME}/.gitconfig"
-
 log 'Installing brew formulae'
 brew install $(cat $DOTFILES_TARGET/brew-list)
 
@@ -73,7 +70,6 @@ source "$DOTFILES_TARGET/prefs.sh"
 
 log 'Setting up Fish'
 $(which fish) "$DOTFILES_TARGET/new_machine/setup.fish"
-$(which fish) eval (/opt/homebrew/bin/brew shellenv)
 
 log 'Creating postgres user'
 createuser -s postgres
