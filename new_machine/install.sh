@@ -87,18 +87,15 @@ log "✅ Ruby version: $(ruby -v)"
 echo
 
 NODE_VERSION=$(ls ~/.local/share/nvm)
-echo "nv: $NODE_VERSION"
-echo "nv: $NODE_VERSION != null"
 if [ "$NODE_VERSION" != null ]; then
-    echo "✅ Node.js version: $NODE_VERSION"
+    log "✅ Node.js version: $NODE_VERSION"
 else
-    echo '❌ Node.js was not installed. Check nvm.fish & Node.js was installed correctly: https://github.com/jorgebucaran/nvm.fish'
-    echo 'Commands ran in fish shell:'
+    log '❌ Node.js was not installed. Check nvm.fish & Node.js was installed correctly: https://github.com/jorgebucaran/nvm.fish'
+    log 'Commands ran in fish shell:'
     echo '# Install jorgebucaran/nvm.fish'
     echo 'fisher install jorgebucaran/nvm.fish'
     echo '# Install latest Node.js LTS'
     echo 'nvm install lts'
-    echo 'nvm use lts'
 fi
 
 log '✅ Homebrew installations:'
