@@ -44,7 +44,8 @@ log 'Installing brew formulae'
 brew install $(cat $DOTFILES_TARGET/brew-formulae)
 
 log 'Updating brew taps'
-brew tap $(cat $DOTFILES_TARGET/brew-taps)
+brew tap homebrew/cask-fonts
+brew tap microsoft/git
 
 log 'Installing brew casks'
 brew install --cask $(cat $DOTFILES_TARGET/brew-casks)
