@@ -86,8 +86,9 @@ echo '# # # # # # # # # # # # # # # # # # # # # # # # # # # # # #'
 log "✅ Ruby version: $(ruby -v)"
 echo
 
-if (( $+commands[node] )); then
-    echo "✅ Node.js version: $(node -v)"
+NODE_VERSION=$(ls ~/.local/share/nvm)
+if [ "$NODE_VERSION" != null ]; then
+    echo "✅ Node.js version: $NODE_VERSION"
 else
     echo '❌ Node.js was not installed. Check nvm.fish & Node.js was installed correctly: https://github.com/jorgebucaran/nvm.fish'
     echo 'Commands ran in fish shell:'
