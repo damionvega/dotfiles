@@ -4,6 +4,12 @@ set -x EDITOR nvim
 set -x GREP_COLOR "1;37;45"
 set -x LANG en_US.UTF-8
 set -x LC_ALL en_US.UTF-8
+set -x GPG_TTY tty
+
+# Config
+set cfg ~/.config/fish/config.fish
+function vc ; nvim $cfg; end
+function sc ; source $cfg; echo "Fish config reloaded!"; end
 
 # Paths
 fish_add_path /usr/local/sbin
@@ -21,8 +27,13 @@ function l    ; tree --dirsfirst -aFCNL 1 $argv ; end
 function ll   ; tree --dirsfirst -ChFupDaLg 1 $argv ; end
 
 # Vim
-function vp ; nvim -p $argv ; end
 function v  ; nvim $argv ; end
+function vp ; nvim -p $argv ; end
+
+# NVM → Node.js
+if not type -q node
+  nvm use lts
+end
 
 # NPM
 function ni   ; npm install $argv ; end
@@ -46,7 +57,7 @@ function ya   ; yarn add $argv ; end
 function yr   ; yarn remove $argv ; end
 function yad  ; yarn add $argv --dev ; end
 function yrd  ; yarn remove $argv --dev ; end
-function yi   ; yarn ; yarn ios ; end
+function yi   ; yarn ios ; end
 
 # Git
 function g    ; git $argv ; end
@@ -124,8 +135,18 @@ end
 
 function l; c $argv; end
 
-# iTerm2
-test -e {$HOME}/.iterm2_shell_integration.fish ; and source {$HOME}/.iterm2_shell_integration.fish
+
+#--------------------------------------------------------------------------------
+# Apps 
+#--------------------------------------------------------------------------------
+
+function oapp
+    osascript -e "open app \"$argv\""
+end
+
+function qapp
+    osascript -e "quit app \"$argv\""
+end
 
 # Homebrew
 /opt/homebrew/bin/brew shellenv | source
@@ -139,7 +160,25 @@ if type -q brew
   end
 end
 
-# NVM → Node.js
-if not type -q node
-  nvm use lts
+# iTerm2
+if test -e {$HOME}/.iterm2_shell_integration.fish 
+  source {$HOME}/.iterm2_shell_integration.fish
 end
+
+# Espanso
+alias ess "espanso start"
+alias esr "espanso restart"
+alias ese "espanso edit"
+
+# Moom
+set icloudDir "~/Library/Mobile\ Documents/com~apple~CloudDocs"
+alias imoom "\
+  qapp Moom;\
+  sleep 1;
+  defaults import com.manytricks.Moom $icloudDir/_djv/Moom.plist;\
+  sleep 1;
+  oapp Moom"
+alias emoom "defaults export com.manytricks.Moom $icloudDir/_djv/Moom.plist"
+
+# SnowSQL
+alias snowsql "/Applications/SnowSQL.app/Contents/MacOS/snowsql"
