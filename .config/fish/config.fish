@@ -141,11 +141,11 @@ function l; c $argv; end
 #--------------------------------------------------------------------------------
 
 function oapp
-    osascript -e "open app \"$argv\""
+  osascript -e "open app \"$argv\""
 end
 
 function qapp
-    osascript -e "quit app \"$argv\""
+  osascript -e "quit app \"$argv\""
 end
 
 # Homebrew
@@ -174,9 +174,7 @@ alias ese "espanso edit"
 set icloudDir "~/Library/Mobile\ Documents/com~apple~CloudDocs"
 alias imoom "\
   qapp Moom;\
-  sleep 1;
   defaults import com.manytricks.Moom $icloudDir/_djv/Moom.plist;\
-  sleep 1;
   oapp Moom"
 alias emoom "defaults export com.manytricks.Moom $icloudDir/_djv/Moom.plist"
 
