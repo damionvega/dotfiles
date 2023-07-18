@@ -6,16 +6,22 @@
 
 " Syntax highlighting {{{
 set t_Co=256
-set background=dark
 if has('win32') || has ('win64')
   let $VIMHOME = expand('~/AppData/Local/nvim/')
 else
   let $VIMHOME = expand('~/.config/nvim/')
 endif
 
-if filereadable($VIMHOME . 'colors/molotov.vim')
-  colorscheme molotov
-end
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
+
+function! ToggleMode ()
+  if &background == 'dark'
+    set background=light
+  else
+    set background=dark
+  endif
+endfunction
+noremap <leader>ll :call ToggleMode ()<CR>
 " }}}
 
 " Mapleader {{{
@@ -29,13 +35,14 @@ set undodir=~/.local/share/nvim/undo
 " }}}
 
 " Set some junk {{{
+set clipboard+=unnamedplus " Allow yank to copy to clipboard
 set completeopt-=preview " Disable scratch buffer for completion preview
 set cursorline " Highlight current line
 set diffopt=filler " Add vertical spaces to keep right and left aligned
 set diffopt+=iwhite " Ignore whitespace changes (focus on code changes)
 set encoding=utf-8 nobomb " BOM often causes trouble
 set expandtab " Expand tabs to spaces
-set fillchars+=vert:\ 
+set fillchars+=vert:\
 set foldcolumn=0 " Column to show folds
 set foldenable " Enable folding
 set foldlevel=5 " Open all folds by default
@@ -98,19 +105,23 @@ set wrapscan " Searches wrap around end of file
 
 " Configuration -------------------------------------------------------------
 
+" Load ~/.config/nvim/init.vim {{{
+noremap <leader>sv :so $MYVIMRC<CR>
+" }}}
+
 " General {{{
 augroup general_config
   autocmd!
 
   " Speed up viewport scrolling {{{
-  nnoremap <C-e> 3<C-e>
-  nnoremap <C-y> 3<C-y>
+  nnoremap <C-e> 8<C-e>
+  nnoremap <C-y> 8<C-y>
   " }}}
 
   " Faster split resizing (+,-) {{{
   if bufwinnr(1)
     map + <C-W>+
-    map - <C-W>-
+    map _ <C-W>-
   endif
   " }}}
 
@@ -165,13 +176,17 @@ augroup general_config
   inoremap <expr> <Up>   pumvisible() ? "\<C-p>" : "\<Up>"
   " }}}
 
-  " Paste toggle (,p) {{{
-  set pastetoggle=<leader>p
-  map <leader>p :set invpaste paste?<CR>
+  " Paste toggle (,pp) {{{
+  set pastetoggle=<leader>pP
+  map <leader>pp :set invpaste paste?<CR>
   " }}}
 
   " Yank from cursor to end of line {{{
   nnoremap Y y$
+  " }}}
+
+  " Go to end of line while in insert mode {{{
+  imap <C-l> <Esc>$a
   " }}}
 
   " Insert newline {{{
@@ -221,7 +236,7 @@ augroup general_config
   " }}}
 
   " Window title {{{
-  set titlestring=%{expand(\"%:t\")} " Set to just the filename
+  " set titlestring=%{expand(\"%:t\")} " Set to just the filename
   " }}}
 augroup END
 " }}}
@@ -428,6 +443,14 @@ augroup END
 augroup filetype_markdown
   autocmd!
   let g:markdown_fenced_languages = ['ruby', 'html', 'javascript', 'css', 'erb=eruby.html', 'bash=sh']
+  set shiftwidth=4 " Makes it easier to copy to other editors e.g. GitHub, Notion
+  set wrap " Wrap lines
+  set linebreak " Break on default chars
+  " Do not color items that have been indented twice e.g. nesting of bullet list items
+  " These are detected as codeblocks
+  let histring = 'hi ' . 'markdownCodeBlock' . ' '
+  let histring .= 'guifg=none ctermfg=none '
+  execute histring
 augroup END
 " }}}
 
@@ -492,12 +515,15 @@ augroup fzf_config
 
   if !exists("g:gui_oni")
     " Basic mappings
+    " nnoremap <C-h> :History<CR>
+    nnoremap <C-o> :Files ./<CR>
     nnoremap <C-p> :Files<CR>
     nnoremap <C-g> :GFiles?<CR>
     nnoremap <C-b> :Buffers<CR>
     nnoremap <C-t> :Tags<CR>
-    nnoremap <C-m> :Marks<CR>
-    nnoremap <leader>l :Lines<CR>
+    " nnoremap <C-m> :Marks<CR>
+    nnoremap <leader>li :Lines<CR>
+    nnoremap <leader>lb :BLines<CR>
 
     " Mapping selecting mappings
     nmap <leader><tab> <plug>(fzf-maps-n)
@@ -505,7 +531,7 @@ augroup fzf_config
     omap <leader><tab> <plug>(fzf-maps-o)
 
     " Insert mode completion
-    imap <c-x><c-k> <plug>(fzf-complete-word)
+    imap <c-x><c-k> <plug>(fzf-completa-word)
     imap <c-x><c-f> <plug>(fzf-complete-path)
     imap <c-x><c-j> <plug>(fzf-complete-file-ag)
     imap <c-x><c-l> <plug>(fzf-complete-line)
@@ -524,86 +550,87 @@ augroup lightline_config
   let g:lightline = {}
   let g:lightline.colorscheme = 'material'
   let g:lightline.component_expand = {
-        \   'linter_checking': 'lightline#ale#checking',
-        \   'linter_warnings': 'lightline#ale#warnings',
-        \   'linter_errors': 'lightline#ale#errors',
-        \   'linter_ok': 'lightline#ale#ok',
-        \ }
+    \   'linter_checking': 'lightline#ale#checking',
+    \   'linter_warnings': 'lightline#ale#warnings',
+    \   'linter_errors': 'lightline#ale#errors',
+    \   'linter_ok': 'lightline#ale#ok',
+    \ }
   let g:lightline.component_function = {
-        \   'cocstatus': 'coc#status',
-        \   'currentfunction': 'CocCurrentFunction'
-        \ }
+    \   'cocstatus': 'coc#status',
+    \   'currentfunction': 'CocCurrentFunction'
+    \ }
   let g:lightline.component_type = {
-        \   'linter_checking': 'left',
-        \   'linter_warnings': 'warning',
-        \   'linter_errors': 'error',
-        \   'linter_ok': 'left',
-        \ }
+    \   'linter_checking': 'left',
+    \   'linter_warnings': 'warning',
+    \   'linter_errors': 'error',
+    \   'linter_ok': 'left',
+    \ }
   let g:lightline.active = {
-        \   'left': [[ 'mode', 'paste' ],
-        \            [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ]],
-        \   'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]]
-        \ }
+    \   'left': [
+    \     [ 'mode', 'paste' ],
+    \     [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ]
+    \   ],
+    \   'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]]
+    \ }
 augroup END
 " }}}
 
-" vim-repeat.vim {{{
-augroup repeat_config
-  autocmd!
-  nmap z <Plug>(RepeatUndo)
-  nmap gz <Plug>(RepeatUndoLine)
-  nmap Z <Plug>(RepeatRedo)
-augroup END
-" }}}
-
-" vim-smooth-scroll {{{
-augroup vim_smooth_scroll_config
-  autocmd!
-  noremap <silent> <C-u> :call smooth_scroll#up(&scroll, 0, 2)<CR>
-  noremap <silent> <C-d> :call smooth_scroll#down(&scroll, 0, 2)<CR>
-augroup END
+" mkdx {{{
+" augroup mkdx_config
+"   let g:mkdx#settings = {
+"     \   'map': { 'prefix': '<leader>' },
+"     \   'highlight': { 'enable': 1 },
+"     \   'links': { 'external': { 'enable': 1 } },
+"     \   'toc':   { 'text': 'Table of Contents', 'update_on_write': 1 },
+"     \   'fold':  { 'enable': 1 },
+"     \   'checkbox': { 'toggles': [' ', 'x'] },
+"     \   'table': { 'align': { 'default': 'left' } }
+"     \ }
+"   let g:polyglot_disabled = ['markdown'] " for vim-polyglot users, it loads Plasticboy's markdown
+"   vmap <leader>mt <Plug>(mkdx-tableize)
+" augroup END
 " }}}
 
 " Plugins -------------------------------------------------------------
 
+" Install plugins {{{
+nnoremap <leader>pi :PlugInstall<CR>
+" }}}
+
 " Load plugins {{{
-call plug#begin($VIMHOME . 'plugged')
-
-Plug 'Shougo/neopairs.vim'
-Plug 'ap/vim-css-color',    { 'for': 'css' }
-Plug 'icatalina/vim-case-change'
-Plug 'jparise/vim-graphql'
-Plug 'junegunn/vim-easy-align'
-Plug 'junegunn/vim-peekaboo'
-Plug 'justinmk/vim-syntax-extra'
-Plug 'lambdalisue/gina.vim'
-Plug 'machakann/vim-highlightedyank'
-Plug 'machakann/vim-sandwich'
-Plug 'sheerun/vim-polyglot'
-Plug 'tpope/vim-repeat'
-
-" Terminal-only plugins
-if !exists('g:gui_oni')
-  Plug 'itchyny/lightline.vim'
-  Plug 'junegunn/fzf',      { 'dir': '~/.fzf', 'do': './install --all' }
-  Plug 'junegunn/fzf.vim'
-  Plug 'maximbaz/lightline-ale'
-  Plug 'neoclide/coc.nvim', { 'branch': 'release' }
-  Plug 'terryma/vim-smooth-scroll'
-  Plug 'tpope/vim-commentary'
-  Plug 'w0rp/ale'
-  Plug 'wellle/targets.vim'
-end
-
-call plug#end()
+" call plug#begin($VIMHOME . 'plugged')
+"
+" Plug 'icatalina/vim-case-change'
+" Plug 'junegunn/vim-easy-align'
+" Plug 'junegunn/vim-peekaboo'
+" Plug 'justinmk/vim-syntax-extra'
+" Plug 'lambdalisue/gina.vim'
+" Plug 'machakann/vim-highlightedyank'
+" Plug 'machakann/vim-sandwich'
+" " Plug 'sheerun/vim-polyglot'
+" Plug 'Shougo/neopairs.vim'
+" " Plug 'SidOfc/mkdx'
+" Plug 'tpope/vim-surround'
+" Plug 'tpope/vim-commentary'
+"
+" " Terminal-only plugins
+" if !exists('g:gui_oni')
+"   Plug 'itchyny/lightline.vim'
+"   Plug 'junegunn/fzf',      { 'dir': '~/.fzf', 'do': './install --all' }
+"   Plug 'junegunn/fzf.vim'
+"   Plug 'maximbaz/lightline-ale'
+"   Plug 'neoclide/coc.nvim', { 'branch': 'release' }
+"   Plug 'tpope/vim-commentary'
+"   Plug 'w0rp/ale'
+"   Plug 'wellle/targets.vim'
+" end
+"
+" call plug#end()
 " }}}
 
 " If using Oni's externalized statusline, hide vim's native statusline,
 if exists("g:gui_oni")
-  set noruler
-  set laststatus=0
-  set noshowcmd
+  "set noruler
+  "set laststatus=0
+  "set noshowcmd
 endif
-
-" Reload vim-colemak to remap any overridden keys
-silent! source "~/.config/nvim/plugged/vim-colemak/plugin/colemak.vim"

@@ -1,21 +1,35 @@
 set fish_greeting
-
 set -x EDITOR nvim
 set -x GREP_COLOR "1;37;45"
 set -x LANG en_US.UTF-8
 set -x LC_ALL en_US.UTF-8
 set -x GPG_TTY tty
 
+set cfgDir ~/.config
+set dotDir ~/.dotfiles/.config
+
 # Config
-set cfg ~/.config/fish/config.fish
-function vc ; nvim $cfg; end
-function sc ; source $cfg; echo "Fish config reloaded!"; end
+set fishCfg "$cfgDir/fish/config.fish"
+function vfi ; nvim $fishCfg; end
+function sfi 
+  source $fishCfg
+  echo "config.fish reloaded"
+end
+function ifi 
+  cp "$dotDir/fish/config.fish $fishCfg"
+  echo "config.fish imported from dotfiles"
+end
+function efi
+  cp $fishCfg "$dotDir/fish/config.fish"
+  echo "config.fish exported to dotfiles"
+end
 
 # Paths
 fish_add_path /usr/local/sbin
 fish_add_path /usr/local/bin
 fish_add_path /opt/homebrew/bin
 fish_add_path /opt/homebrew/opt/postgresql@12/bin
+fish_add_path /usr/bin/python3/bin
 fish_add_path ~/.rbenv/shims
 fish_add_path ~/.rbenv/bin
 
@@ -27,37 +41,22 @@ function l    ; tree --dirsfirst -aFCNL 1 $argv ; end
 function ll   ; tree --dirsfirst -ChFupDaLg 1 $argv ; end
 
 # Vim
-function v  ; nvim $argv ; end
-function vp ; nvim -p $argv ; end
-
-# NVM → Node.js
-if not type -q node
-  nvm use lts
+set luaCfg "$cfgDir/nvim/init.lua"
+set nvimCfg "$cfgDir/nvim/setup.vim"
+function v   ; nvim $argv ; end
+function v.  ; nvim . ; end
+function vp  ; nvim -p $argv ; end
+function vvi ; nvim $luaCfg ; end
+function ivi
+  cp "$dotDir/nvim/init.lua $luaCfg"
+  cp "$dotDir/nvim/setup.vim $nvimCfg"
+  echo "nvim config imported from dotfiles"
 end
-
-# NPM
-function ni   ; npm install $argv ; end
-function nis  ; npm install --save $argv ; end
-function nus  ; npm uninstall --save $argv ; end
-function nisd ; npm install --save-dev $argv ; end
-function nusd ; npm uninstall --save-dev $argv ; end
-function nr   ; npm run $argv ; end
-function nt   ; npm test ; end
-function ntw  ; npm run test:watch ; end
-function ntc  ; npm run cron:test ; end
-function ntcw ; npm run cron:test:watch ; end
-function nd   ; npm run dev ; end
-
-# Yarn
-function y    ; yarn $argv ; end
-function yt   ; yarn test ; end
-function ytw  ; yarn test:watch ; end
-function ytwa ; yarn test:watch:all ; end
-function ya   ; yarn add $argv ; end
-function yr   ; yarn remove $argv ; end
-function yad  ; yarn add $argv --dev ; end
-function yrd  ; yarn remove $argv --dev ; end
-function yi   ; yarn ios ; end
+function evi
+  cp $luaCfg "$dotDir/nvim/init.lua"
+  cp $nvimCfg "$dotDir/nvim/setup.vim"
+  echo "nvim config exported to dotfiles"
+end
 
 # Git
 function g    ; git $argv ; end
@@ -82,27 +81,58 @@ function grba ; git rebase --abort ; end
 function grhh ; git reset HEAD --hard ; end
 
 # Postgres
-function pgup   ; pg_ctl -D /usr/local/var/postgres start ; end
-function pgdown ; pg_ctl -D /usr/local/var/postgres stop -s -m fast ; end
+function pgu ; pg_ctl -D /usr/local/var/postgres start ; end
+function pgd ; pg_ctl -D /usr/local/var/postgres stop -s -m fast ; end
+
+# Docker
+function d   ; docker $argv ; end
+function dc  ; docker compose $argv ; end
+function dcu ; docker compose up ; end
+function dcd ; docker compose down ; end
+
+# NPM
+function ni   ; npm install $argv ; end
+function nis  ; npm install --save $argv ; end
+function nus  ; npm uninstall --save $argv ; end
+function nisd ; npm install --save-dev $argv ; end
+function nusd ; npm uninstall --save-dev $argv ; end
+function nt   ; npm test ; end
+function nr   ; npm run $argv ; end
+function ntw  ; npm run test:watch ; end
+function ntc  ; npm run cron:test ; end
+function ntcw ; npm run cron:test:watch ; end
+function ntci ; npm run test:ci ; end
+function nd   ; npm run dev ; end
+function nb   ; npm run build ; end
+
+# Yarn
+function y    ; yarn $argv ; end
+function yt   ; yarn test ; end
+function ytw  ; yarn test:watch ; end
+function ytwa ; yarn test:watch:all ; end
+function ya   ; yarn add $argv ; end
+function yr   ; yarn remove $argv ; end
+function yad  ; yarn add $argv --dev ; end
+function yrd  ; yarn remove $argv --dev ; end
+function yi   ; yarn ios ; end
 
 # Cocoapods
 function pi  ; pod install $argv ; end
 function pir ; pod install --repo-update ; end
 
 # Utilities
-function a        ; command rg --ignore=.git --ignore=log --ignore=tags --ignore=tmp --ignore=vendor --ignore=spec/vcr $argv ; end
 function b        ; bundle exec $argv ; end
-function d        ; du -h -d=1 $argv ; end
+function duh        ; du -h -d=2 $argv ; end
 function df       ; command df -h $argv ; end
-function digga    ; command dig +nocmd $argv[1] any +multiline +noall +answer; end
+function digga    ; command dig +nocmd $argv[2] any +multiline +noall +answer; end
 function grep     ; command grep --color=auto $argv ; end
-function httpdump ; sudo tcpdump -i en1 -n -s 0 -w - | grep -a -o -E "Host\: .*|GET \/.*" ; end
-function ip       ; curl -s http://checkip.dyndns.com/ | sed 's/[^0-9\.]//g' ; end
-function localip  ; ipconfig getifaddr en0 ; end
+function httpdump ; sudo tcpdump -i en2 -n -s 0 -w - | grep -a -o -E "Host\: .*|GET \/.*" ; end
+function ip       ; curl -s http://checkip.dyndns.com/ | sed 's/[^1-9\.]//g' ; end
+function localip  ; ipconfig getifaddr en1 ; end
 function lookbusy ; cat /dev/urandom | hexdump -C | grep --color "ca fe" ; end
 function t        ; command tree -C $argv ; end
-function tmux     ; command tmux -2 $argv ; end
-function tunnel   ; ssh -D 8080 -C -N $argv ; end
+function tmux     ; command tmux -1 $argv ; end
+function tunnel   ; ssh -D 8081 -C -N $argv ; end
 
 # View files/dirs
 function c
@@ -135,10 +165,9 @@ end
 
 function l; c $argv; end
 
-
-#--------------------------------------------------------------------------------
-# Apps 
-#--------------------------------------------------------------------------------
+#-------------------------------------------------------------------------------
+# Apps
+#-------------------------------------------------------------------------------
 
 function oapp
   osascript -e "open app \"$argv\""
@@ -149,7 +178,12 @@ function qapp
 end
 
 # Homebrew
-/opt/homebrew/bin/brew shellenv | source
+if test -e /opt/homebrew/bin/brew
+  /opt/homebrew/bin/brew shellenv | source
+else
+  /usr/local/bin/brew shellenv | source
+end
+
 if type -q brew
   if test -d (brew --prefix)"/share/fish/completions"
     set -gx fish_complete_path $fish_complete_path (brew --prefix)/share/fish/completions
@@ -160,23 +194,21 @@ if type -q brew
   end
 end
 
+# Node.js (NVM)
+if not type -q node || not type -q npm
+  nvm use lts --silent
+end
+
 # iTerm2
-if test -e {$HOME}/.iterm2_shell_integration.fish 
+if test -e {$HOME}/.iterm2_shell_integration.fish
   source {$HOME}/.iterm2_shell_integration.fish
 end
 
-# Espanso
-alias ess "espanso start"
-alias esr "espanso restart"
-alias ese "espanso edit"
-
 # Moom
-set icloudDir "~/Library/Mobile\ Documents/com~apple~CloudDocs"
+set iCloudDir "~/Library/Mobile\ Documents/com~apple~CloudDocs"
 alias imoom "\
   qapp Moom;\
-  defaults import com.manytricks.Moom $icloudDir/_djv/Moom.plist;\
+  defaults import com.manytricks.Moom $iCloudDir/_djv/Moom.plist;\
   oapp Moom"
-alias emoom "defaults export com.manytricks.Moom $icloudDir/_djv/Moom.plist"
+alias emoom "defaults export com.manytricks.Moom $iCloudDir/_djv/Moom.plist"
 
-# SnowSQL
-alias snowsql "/Applications/SnowSQL.app/Contents/MacOS/snowsql"
