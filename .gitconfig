@@ -3,19 +3,35 @@
   email = hi@djv.io
 
 [alias]
-  br   = branch
-  ; Example: g ch master...staging
-  ch   = log --cherry --pretty=format:\"%C(auto)%h (%ar) %an: %s\" --date-order --reverse
-  ci   = commit
-  co   = checkout
-  df   = diff
-  g    = grep -I
-  lg   = log -p
-  loq  = log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold white)— %an%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative
-  st   = status
-  find = log --pretty=\"format:%Cgreen%H %Cblue%s\" --name-status --grep
-
-[branch]
+  amend = commit --amend --no-edit
+  a   = add
+  br  = branch
+  c   = commit
+  cm  = commit -m 
+  ; Example: g ch main...abcd1234
+  ch  = log --cherry --pretty=format:\"%C(auto)%h (%ar) %an: %s\" --date-order --reverse
+  co  = checkout
+  cob = checkout -b
+  cpx = cherry-pick -x
+  d   = diff --no-prefix
+  dc  = diff --cached --no-prefix
+  df  = diff
+  f   = fetch origin main:main
+  g   = grep -I
+  ls  = branch --list
+  lsg = branch --list | grep
+  l   = log
+  lg  = log --pretty=\"format:%Cgreen%H %Cblue%s\" --name-status --grep
+  lp  = log -p
+  loq = log --graph --all --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(bold white)— %an%C(reset)%C(bold yellow)%d%C(reset)' --abbrev-commit --date=relative
+  p   = push
+  rb  = rebase
+  rba = rebase --abort
+  rbc = rebase --continue
+  rbm = rebase main
+  rmd = rm $(git ls-files --deleted)
+  s   = status
+  su  = submodule update[branch]
   autosetuprebase = always
 
 [color]
@@ -37,6 +53,9 @@
   changed   = green
   untracked = cyan
 
+[pull]
+  rebase = true
+
 [push]
   default = simple
 
@@ -53,7 +72,7 @@
   version = 2
 
 [credential]
-  helper = manager
+  helper = osxkeychain
 
 [url "git@github.com:"]
   insteadOf     = "gh:"
@@ -73,3 +92,5 @@
 
 [url "git@heroku.com:"]
   insteadOf = "heroku:"
+   
+ 

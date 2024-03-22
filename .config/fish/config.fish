@@ -10,18 +10,10 @@ set dotDir ~/.dotfiles/.config
 
 # Config
 set fishCfg "$cfgDir/fish/config.fish"
-function vfi ; nvim $fishCfg; end
-function sfi 
+function vfc ; nvim $fishCfg; end
+function sfc
   source $fishCfg
   echo "config.fish reloaded"
-end
-function ifi 
-  cp "$dotDir/fish/config.fish $fishCfg"
-  echo "config.fish imported from dotfiles"
-end
-function efi
-  cp $fishCfg "$dotDir/fish/config.fish"
-  echo "config.fish exported to dotfiles"
 end
 
 # Paths
@@ -46,17 +38,7 @@ set nvimCfg "$cfgDir/nvim/setup.vim"
 function v   ; nvim $argv ; end
 function v.  ; nvim . ; end
 function vp  ; nvim -p $argv ; end
-function vvi ; nvim $luaCfg ; end
-function ivi
-  cp "$dotDir/nvim/init.lua $luaCfg"
-  cp "$dotDir/nvim/setup.vim $nvimCfg"
-  echo "nvim config imported from dotfiles"
-end
-function evi
-  cp $luaCfg "$dotDir/nvim/init.lua"
-  cp $nvimCfg "$dotDir/nvim/setup.vim"
-  echo "nvim config exported to dotfiles"
-end
+function vvc ; nvim $luaCfg ; end
 
 # Git
 function g    ; git $argv ; end
@@ -165,9 +147,70 @@ end
 
 function l; c $argv; end
 
+
+#-------------------------------------------------------------------------------
+# Import/export
+#-------------------------------------------------------------------------------
+
+
+# Fish config
+function ifc
+  if cp "$dotDir/fish/config.fish" $fishCfg
+    echo "✅ config.fish ← dotfiles"
+  else
+    echo "🚫 config.fish ← dotfiles"
+  end
+end
+
+function efc
+  if cp $fishCfg "$dotDir/fish/config.fish"
+    echo "✅ config.fish → dotfiles"
+  else
+    echo "🚫 config.fish → dotfiles"
+  end
+end
+
+# nvim config
+function ivc
+  if cp "$dotDir/nvim/init.lua" $luaCfg
+    and cp "$dotDir/nvim/setup.vim" $nvimCfg
+    echo "✅ nvim config ← dotfiles"
+  else
+    echo "🚫 nvim config ← dotfiles"
+  end
+end
+
+function evc
+  if cp $luaCfg "$dotDir/nvim/init.lua"
+    and cp $nvimCfg "$dotDir/nvim/setup.vim"
+    echo "✅ nvim config → dotfiles"
+  else
+    echo "🚫 nvim config → dotfiles"
+  end
+end
+
+# nvim plugins
+function ivp
+  if cp -r "$dotDir/nvim/lua" "$cfgDir/nvim/"
+    echo "✅ nvim plugins ← dotfiles"
+  else
+    echo "🚫 nvim plugins ← dotfiles"
+  end
+end
+
+function evp
+  if cp -r "$cfgDir/nvim/lua" "$dotDir/nvim/"
+    echo "✅ nvim plugins → dotfiles"
+  else
+    echo "🚫 nvim plugins → dotfiles"
+  end
+end
+
+
 #-------------------------------------------------------------------------------
 # Apps
 #-------------------------------------------------------------------------------
+
 
 function oapp
   osascript -e "open app \"$argv\""
@@ -195,8 +238,10 @@ if type -q brew
 end
 
 # Node.js (NVM)
+set nvm_default_version lts
+
 if not type -q node || not type -q npm
-  nvm use lts --silent
+  nvm use lts
 end
 
 # iTerm2
@@ -206,9 +251,13 @@ end
 
 # Moom
 set iCloudDir "~/Library/Mobile\ Documents/com~apple~CloudDocs"
-alias imoom "\
-  qapp Moom;\
-  defaults import com.manytricks.Moom $iCloudDir/_djv/Moom.plist;\
-  oapp Moom"
-alias emoom "defaults export com.manytricks.Moom $iCloudDir/_djv/Moom.plist"
+function imoom 
+  qapp Moom;
+  defaults import com.manytricks.Moom "$iCloudDir/_djv/Moom.plist";
+  oapp Moom;
+end
+
+function emoom
+  defaults export com.manytricks.Moom "$iCloudDir/_djv/Moom.plist";
+end
 

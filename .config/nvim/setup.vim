@@ -2,26 +2,14 @@
 
 " Settings -------------------------------------------------------------
 
-" Preamble {{{
-
 " Syntax highlighting {{{
 set t_Co=256
+let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 if has('win32') || has ('win64')
   let $VIMHOME = expand('~/AppData/Local/nvim/')
 else
   let $VIMHOME = expand('~/.config/nvim/')
 endif
-
-let $NVIM_TUI_ENABLE_TRUE_COLOR=1
-
-function! ToggleMode ()
-  if &background == 'dark'
-    set background=light
-  else
-    set background=dark
-  endif
-endfunction
-noremap <leader>ll :call ToggleMode ()<CR>
 " }}}
 
 " Mapleader {{{
@@ -69,7 +57,7 @@ set magic " Enable extended regexes
 set mouse=a " Enable the mouse
 set noerrorbells " Disable error bells
 set nojoinspaces " Only insert single space after a '.', '?' and '!' with a join command
-set noshowmode " Don't show the current mode (lightline.vim takes care of us)
+" set noshowmode " Don't show the current/ mode (lightline.vim takes care of us)
 set nostartofline " Don't reset cursor to start of line when moving around
 set nowrap " Do not wrap lines
 set nu " Enable line numbers
@@ -100,22 +88,16 @@ set winminheight=0 " Allow splits to be reduced to a single line
 set wrapscan " Searches wrap around end of file
 " }}}
 
-" }}}
-
 
 " Configuration -------------------------------------------------------------
 
-" Load ~/.config/nvim/init.vim {{{
-noremap <leader>sv :so $MYVIMRC<CR>
-" }}}
-
-" General {{{
+" General {{
 augroup general_config
   autocmd!
 
   " Speed up viewport scrolling {{{
-  nnoremap <C-e> 8<C-e>
-  nnoremap <C-y> 8<C-y>
+  " noremap <C-e> 8<C-e>
+  " noremap <C-y> 8<C-y>
   " }}}
 
   " Faster split resizing (+,-) {{{
@@ -232,148 +214,6 @@ augroup general_config
 
   " Relative numbers {{{
   set relativenumber " Use relative line numbers. Current line is still in status bar.
-  au BufReadPost,BufNewFile * set relativenumber
-  " }}}
-
-  " Window title {{{
-  " set titlestring=%{expand(\"%:t\")} " Set to just the filename
-  " }}}
-augroup END
-" }}}
-
-" Buffers {{{
-augroup buffer_control
-  autocmd!
-
-  " Buffer navigation (,,) (gb) (gB) (,ls) {{{
-  map <Leader>, <C-^>
-  map <Leader>ls :buffers<CR>
-  map gb :bnext<CR>
-  map gB :bprev<CR>
-  " }}}
-
-  " Jump to buffer number (<N>gb) {{{
-  let c = 1
-  while c <= 99
-    execute "nnoremap " . c . "gb :" . c . "b\<CR>"
-    let c += 1
-  endwhile
-  " }}}
-
-  " Close Quickfix window (,qq) {{{
-  map <leader>qq :cclose<CR>
-  " }}}
-
-  " Rename buffer (:Rename) {{{
-  function! s:RenameBuffer(name)
-    silent! execute 'saveas! ' . a:name
-    let l:old_buffer = bufnr("#")
-    let l:old_filename = expand("#:t")
-    let l:new_buffer = bufnr("%")
-    let l:new_filename = expand("%:t")
-    silent! execute '!rm ' . shellescape(expand("#"), 1)
-    silent! execute 'bd' l:old_buffer
-    echom 'Renamed `' . l:old_filename . '` to `' . l:new_filename . '`'
-  endfunction
-  command! -nargs=1 Rename call s:RenameBuffer(<f-args>)
-  " }}}
-augroup END
-" }}}
-
-" Jumping to tags {{{
-augroup jump_to_tags
-  autocmd!
-
-  " Basically, <c-]> jumps to tags (like normal) and <c-\> opens the tag in a new
-  " split instead.
-  "
-  " Both of them will align the destination line to the upper middle part of the
-  " screen.  Both will pulse the cursor line so you can see where the hell you
-  " are.  <c-\> will also fold everything in the buffer and then unfold just
-  " enough for you to see the destination line.
-  nnoremap <c-]> <c-]>mzzvzz15<c-e>`z:Pulse<cr>
-  nnoremap <c-\> <c-w>v<c-]>mzzMzvzz15<c-e>`z:Pulse<cr>
-
-  " Pulse Line (thanks Steve Losh)
-  function! s:Pulse() " {{{
-    redir => old_hi
-      silent execute 'hi CursorLine'
-    redir END
-    let old_hi = split(old_hi, '\n')[0]
-    let old_hi = substitute(old_hi, 'xxx', '', '')
-
-    let steps = 8
-    let width = 1
-    let start = width
-    let end = steps * width
-    let color = 233
-
-    for i in range(start, end, width)
-      execute "hi CursorLine ctermbg=" . (color + i)
-      redraw
-      sleep 6m
-    endfor
-    for i in range(end, start, -1 * width)
-      execute "hi CursorLine ctermbg=" . (color + i)
-      redraw
-      sleep 6m
-    endfor
-
-    execute 'hi ' . old_hi
-  endfunction " }}}
-  command! -nargs=0 Pulse call s:Pulse()
-augroup END
-" }}}
-
-" Highlight Interesting Words {{{
-augroup highlight_interesting_word
-  autocmd!
-  " This mini-plugin provides a few mappings for highlighting words temporarily.
-  "
-  " Sometimes you're looking at a hairy piece of code and would like a certain
-  " word or two to stand out temporarily.  You can search for it, but that only
-  " gives you one color of highlighting.  Now you can use <leader>N where N is
-  " a number from 1-6 to highlight the current word in a specific color.
-  function! HiInterestingWord(n) " {{{
-    " Save our location.
-    normal! mz
-
-    " Yank the current word into the z register.
-    normal! "zyiw
-
-    " Calculate an arbitrary match ID.  Hopefully nothing else is using it.
-    let mid = 86750 + a:n
-
-    " Clear existing matches, but don't worry if they don't exist.
-    silent! call matchdelete(mid)
-
-    " Construct a literal pattern that has to match at boundaries.
-    let pat = '\V\<' . escape(@z, '\') . '\>'
-
-    " Actually match the words.
-    call matchadd("InterestingWord" . a:n, pat, 1, mid)
-
-    " Move back to our original location.
-    normal! `z
-  endfunction " }}}
-
-  " Mappings {{{
-  nnoremap <silent> <leader>1 :call HiInterestingWord(1)<cr>
-  nnoremap <silent> <leader>2 :call HiInterestingWord(2)<cr>
-  nnoremap <silent> <leader>3 :call HiInterestingWord(3)<cr>
-  nnoremap <silent> <leader>4 :call HiInterestingWord(4)<cr>
-  nnoremap <silent> <leader>5 :call HiInterestingWord(5)<cr>
-  nnoremap <silent> <leader>6 :call HiInterestingWord(6)<cr>
-  " }}}
-
-  " Default Highlights {{{
-  hi def InterestingWord1 guifg=#000000 ctermfg=16 guibg=#ffa724 ctermbg=214
-  hi def InterestingWord2 guifg=#000000 ctermfg=16 guibg=#aeee00 ctermbg=154
-  hi def InterestingWord3 guifg=#000000 ctermfg=16 guibg=#8cffba ctermbg=121
-  hi def InterestingWord4 guifg=#000000 ctermfg=16 guibg=#b88853 ctermbg=137
-  hi def InterestingWord5 guifg=#000000 ctermfg=16 guibg=#ff9eb8 ctermbg=211
-  hi def InterestingWord6 guifg=#000000 ctermfg=16 guibg=#ff2c4b ctermbg=195
-  " }}}
 augroup END
 " }}}
 
@@ -396,39 +236,7 @@ augroup word_processor_mode
 augroup END
 " }}}
 
-" Restore Cursor Position {{{
-augroup restore_cursor
-  autocmd!
-
-  autocmd BufReadPost *
-    \ if line("'\"") > 1 && line("'\"") <= line("$") |
-    \   exe "normal! g`\"" |
-    \ endif
-augroup END
-" }}}
-
-
 " Filetypes -------------------------------------------------------------
-
-" C {{{
-augroup filetype_c
-  autocmd!
-
-  " Highlight Custom C Types {{{
-  autocmd BufRead,BufNewFile *.[ch] let fname = expand('<afile>:p:h') . '/types.vim'
-  autocmd BufRead,BufNewFile *.[ch] if filereadable(fname)
-  autocmd BufRead,BufNewFile *.[ch]   exe 'so ' . fname
-  autocmd BufRead,BufNewFile *.[ch] endif
-  " }}}
-augroup END
-" }}}
-
-" Clojure {{{
-augroup filetype_clojure
-  autocmd!
-  autocmd FileType lisp,clojure,scheme RainbowParentheses
-augroup END
-" }}}
 
 " JavaScript {{{
 augroup filetype_javascript
@@ -455,182 +263,16 @@ augroup END
 " }}}
 
 " Ruby {{{
-augroup filetype_ruby
-  autocmd!
-
-  au BufRead,BufNewFile Rakefile,Capfile,Gemfile,.autotest,.irbrc,*.treetop,*.tt set ft=ruby syntax=ruby
-
-  " Ruby.vim
-  let ruby_operators = 1
-  let ruby_space_errors = 1
-  let ruby_fold = 1
-  let g:ruby_indent_block_style = 'do'
-  let g:ruby_indent_assignment_style = 'variable'
-augroup END
-" }}}
-
-" Plugin Configuration -------------------------------------------------------------
-
-" Ale.vim {{{
-augroup ale_config
-  let g:ale_linters = {'rust': ['rls']}
-augroup END
-" }}}
-
-" coc.vim {{{
-augroup coc_config
-  function! CocCurrentFunction()
-    return get(b:, 'coc_current_function', '')
-  endfunction
-
-  nmap <leader>d <Plug>(coc-definition)
-  nmap <leader>= <Plug>(coc-format-selected)
-  vmap <leader>= <Plug>(coc-format-selected)
-  nmap <leader>r <Plug>(coc-rename)
-  nmap <leader>y <Plug>(coc-codelens-action)
-  nmap <leader>x <Plug>(coc-fix-current)
-  nmap <leader>z <Plug>(coc-codeaction)
-
-  command! -nargs=0 Format :call CocAction('format')
-augroup END
-" }}}
-
-" EasyAlign.vim {{{
-augroup easy_align_config
-  autocmd!
-  " Start interactive EasyAlign in visual mode (e.g. vip<Enter>)
-  vmap <Enter> <Plug>(EasyAlign)
-  " Start interactive EasyAlign for a motion/text object (e.g. <Leader>aip)
-  nmap <Leader>a <Plug>(EasyAlign)
-augroup END
-" }}}
-
-" fzf {{{
-augroup fzf_config
-  set rtp+=/usr/local/opt/fzf
-
-  let g:fzf_layout = { 'up': '~40%' }
-  let g:fzf_history_dir = '~/.config/nvim/fzf-history'
-  let g:fzf_buffers_jump = 1 " Jump to existing buffer if available
-
-  if !exists("g:gui_oni")
-    " Basic mappings
-    " nnoremap <C-h> :History<CR>
-    nnoremap <C-o> :Files ./<CR>
-    nnoremap <C-p> :Files<CR>
-    nnoremap <C-g> :GFiles?<CR>
-    nnoremap <C-b> :Buffers<CR>
-    nnoremap <C-t> :Tags<CR>
-    " nnoremap <C-m> :Marks<CR>
-    nnoremap <leader>li :Lines<CR>
-    nnoremap <leader>lb :BLines<CR>
-
-    " Mapping selecting mappings
-    nmap <leader><tab> <plug>(fzf-maps-n)
-    xmap <leader><tab> <plug>(fzf-maps-x)
-    omap <leader><tab> <plug>(fzf-maps-o)
-
-    " Insert mode completion
-    imap <c-x><c-k> <plug>(fzf-completa-word)
-    imap <c-x><c-f> <plug>(fzf-complete-path)
-    imap <c-x><c-j> <plug>(fzf-complete-file-ag)
-    imap <c-x><c-l> <plug>(fzf-complete-line)
-  end
-augroup END
-" }}}
-
-" lightline.vim {{{
-augroup lightline_config
-  autocmd!
-  let g:lightline#ale#indicator_checking = "\uf110 "
-  let g:lightline#ale#indicator_warnings = "\uf071 "
-  let g:lightline#ale#indicator_errors = "\uf05e "
-  let g:lightline#ale#indicator_ok = "\uf00c "
-
-  let g:lightline = {}
-  let g:lightline.colorscheme = 'material'
-  let g:lightline.component_expand = {
-    \   'linter_checking': 'lightline#ale#checking',
-    \   'linter_warnings': 'lightline#ale#warnings',
-    \   'linter_errors': 'lightline#ale#errors',
-    \   'linter_ok': 'lightline#ale#ok',
-    \ }
-  let g:lightline.component_function = {
-    \   'cocstatus': 'coc#status',
-    \   'currentfunction': 'CocCurrentFunction'
-    \ }
-  let g:lightline.component_type = {
-    \   'linter_checking': 'left',
-    \   'linter_warnings': 'warning',
-    \   'linter_errors': 'error',
-    \   'linter_ok': 'left',
-    \ }
-  let g:lightline.active = {
-    \   'left': [
-    \     [ 'mode', 'paste' ],
-    \     [ 'cocstatus', 'currentfunction', 'readonly', 'filename', 'modified' ]
-    \   ],
-    \   'right': [[ 'linter_checking', 'linter_errors', 'linter_warnings', 'linter_ok' ]]
-    \ }
-augroup END
-" }}}
-
-" mkdx {{{
-" augroup mkdx_config
-"   let g:mkdx#settings = {
-"     \   'map': { 'prefix': '<leader>' },
-"     \   'highlight': { 'enable': 1 },
-"     \   'links': { 'external': { 'enable': 1 } },
-"     \   'toc':   { 'text': 'Table of Contents', 'update_on_write': 1 },
-"     \   'fold':  { 'enable': 1 },
-"     \   'checkbox': { 'toggles': [' ', 'x'] },
-"     \   'table': { 'align': { 'default': 'left' } }
-"     \ }
-"   let g:polyglot_disabled = ['markdown'] " for vim-polyglot users, it loads Plasticboy's markdown
-"   vmap <leader>mt <Plug>(mkdx-tableize)
+" augroup filetype_ruby
+"   autocmd!
+"
+"   au BufRead,BufNewFile Rakefile,Capfile,Gemfile,.autotest,.irbrc,*.treetop,*.tt set ft=ruby syntax=ruby
+"
+"   " Ruby.vim
+"   let ruby_operators = 1
+"   let ruby_space_errors = 1
+"   let ruby_fold = 1
+"   let g:ruby_indent_block_style = 'do'
+"   let g:ruby_indent_assignment_style = 'variable'
 " augroup END
 " }}}
-
-" Plugins -------------------------------------------------------------
-
-" Install plugins {{{
-nnoremap <leader>pi :PlugInstall<CR>
-" }}}
-
-" Load plugins {{{
-" call plug#begin($VIMHOME . 'plugged')
-"
-" Plug 'icatalina/vim-case-change'
-" Plug 'junegunn/vim-easy-align'
-" Plug 'junegunn/vim-peekaboo'
-" Plug 'justinmk/vim-syntax-extra'
-" Plug 'lambdalisue/gina.vim'
-" Plug 'machakann/vim-highlightedyank'
-" Plug 'machakann/vim-sandwich'
-" " Plug 'sheerun/vim-polyglot'
-" Plug 'Shougo/neopairs.vim'
-" " Plug 'SidOfc/mkdx'
-" Plug 'tpope/vim-surround'
-" Plug 'tpope/vim-commentary'
-"
-" " Terminal-only plugins
-" if !exists('g:gui_oni')
-"   Plug 'itchyny/lightline.vim'
-"   Plug 'junegunn/fzf',      { 'dir': '~/.fzf', 'do': './install --all' }
-"   Plug 'junegunn/fzf.vim'
-"   Plug 'maximbaz/lightline-ale'
-"   Plug 'neoclide/coc.nvim', { 'branch': 'release' }
-"   Plug 'tpope/vim-commentary'
-"   Plug 'w0rp/ale'
-"   Plug 'wellle/targets.vim'
-" end
-"
-" call plug#end()
-" }}}
-
-" If using Oni's externalized statusline, hide vim's native statusline,
-if exists("g:gui_oni")
-  "set noruler
-  "set laststatus=0
-  "set noshowcmd
-endif
